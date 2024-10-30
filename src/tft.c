@@ -35,11 +35,7 @@
 #include "hardware/pwm.h"
 
 #include "tft.h"
-
-#define TAG "tft: "
-
-#define pr_debug(...) printf(TAG __VA_ARGS__)
-#define pr_debug_nt(...)
+#include "debug.h"
 
 static struct tft_priv g_priv;
 
