@@ -127,7 +127,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/eink-luatos.cmake)
 endif()
 
 set(INDEV_DRV_USED        1)
-set(INDEV_DRV_USE_GT911   1)
+set(INDEV_DRV_USE_FT6236  1)
+set(INDEV_DRV_USE_GT911   0)
 set(INDEV_DRV_USE_TSC2007 0)
 set(INDEV_DRV_USE_CST816D 0)
 
@@ -153,6 +154,7 @@ add_executable(${PROJECT_NAME}
     eink_ssd1681.c
     eink_luatos.c
     indev.c
+    ft6236.c
     gt911.c
     tsc2007.c
     cst816d.c
@@ -205,6 +207,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_
 # Indev drivers define
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USED=${INDEV_DRV_USED})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_CST816D=${INDEV_DRV_USE_CST816D})
+target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_FT6236=${INDEV_DRV_USE_FT6236})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_GT911=${INDEV_DRV_USE_GT911})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_TSC2007=${INDEV_DRV_USE_TSC2007})
 
