@@ -26,7 +26,7 @@ Well. The default debug UART on the Raspberry Pi is assigned to GPIO 14 and 15. 
 
 ## Build
 
-The default cmake settings is to build the `rpi_dm_yt350s006` Raspberry Pi Display HAT example.
+The default CMake settings are configured to build the `rpi_dm_yt350s006` Raspberry Pi Display HAT example.
 
 Build for the Raspberry Pi Pico:
 ```bash
