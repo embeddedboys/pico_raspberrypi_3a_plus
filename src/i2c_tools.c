@@ -2,6 +2,8 @@
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
+#include "debug.h"
+
 bool reserved_addr(uint8_t addr) {
     return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
 }
@@ -11,12 +13,12 @@ int i2c_bus_scan(i2c_inst_t *i2c)
     if (!i2c)
         i2c = i2c0;
 
-    printf("\nI2C Bus Scan\n");
-    printf("   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+    pr_info("\nI2C Bus Scan\n");
+    pr_info("   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
 
     for (int addr = 0; addr < (1 << 7); ++addr) {
         if (addr % 16 == 0) {
-            printf("%02x ", addr);
+            pr_info("%02x ", addr);
         }
 
         // Perform a 1-byte dummy read from the probe address. If a slave
@@ -32,9 +34,9 @@ int i2c_bus_scan(i2c_inst_t *i2c)
         else
             ret = i2c_read_blocking(i2c, addr, &rxdata, 1, false);
 
-        printf(ret < 0 ? "." : "@");
-        printf(addr % 16 == 15 ? "\n" : "  ");
+        pr_info(ret < 0 ? "." : "@");
+        pr_info(addr % 16 == 15 ? "\n" : "  ");
     }
-    printf("Done.\n");
+    pr_info("Done.\n");
     return 0;
 }

@@ -32,6 +32,8 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "debug.h"
+
 struct tft_priv;
 
 typedef unsigned int u32;

@@ -25,7 +25,7 @@
 
 static int tft_ili9488_init_display(struct tft_priv *priv)
 {
-    printf("%s, writing patched initial sequence...\n", __func__);
+    pr_info("%s, writing patched initial sequence...\n", __func__);
     priv->tftops->reset(priv);
 
     write_reg(priv, 0xE0, 0x00, 0x09, 0x16, 0x0A, 0x1B, 0x0A, 0x41, 0x58, 0x50, 0x02, 0x08, 0x0D, 0x20, 0x24, 0x0F);

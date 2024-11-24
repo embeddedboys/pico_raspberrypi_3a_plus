@@ -1,0 +1,163 @@
+;
+; Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
+;
+; SPDX-License-Identifier: BSD-3-Clause
+;
+.pio_version 0 // only requires PIO version 0
+
+.program uart_tx
+.side_set 1 opt
+
+; An 8n1 UART transmit program.
+; OUT pin 0 and side-set pin 0 are both mapped to UART TX pin.
+
+    pull       side 1 [7]  ; Assert stop bit, or stall with line in idle state
+    set x, 7   side 0 [7]  ; Preload bit counter, assert start bit for 8 clocks
+bitloop:                   ; This loop will run 8 times (8n1 UART)
+    out pins, 1            ; Shift 1 bit from OSR to the first OUT pin
+    jmp x-- bitloop   [6]  ; Each loop iteration is 8 cycles.
+
+
+% c-sdk {
+#include <stdarg.h>
+#include <stdbool.h>
+#include "hardware/clocks.h"
+
+static inline void uart_tx_program_init(PIO pio, uint sm, uint offset, uint pin_tx, uint baud) {
+    // Tell PIO to initially drive output-high on the selected pin, then map PIO
+    // onto that pin with the IO muxes.
+    pio_sm_set_pins_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+    pio_sm_set_pindirs_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+    pio_gpio_init(pio, pin_tx);
+
+    pio_sm_config c = uart_tx_program_get_default_config(offset);
+
+    // OUT shifts to right, no autopull
+    sm_config_set_out_shift(&c, true, false, 32);
+
+    // We are mapping both OUT and side-set to the same pin, because sometimes
+    // we need to assert user data onto the pin (with OUT) and sometimes
+    // assert constant values (start/stop bit)
+    sm_config_set_out_pins(&c, pin_tx, 1);
+    sm_config_set_sideset_pins(&c, pin_tx);
+
+    // We only need TX, so get an 8-deep FIFO!
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+    // SM transmits 1 bit per 8 execution cycles.
+    float div = (float)clock_get_hz(clk_sys) / (8 * baud);
+    sm_config_set_clkdiv(&c, div);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline void uart_tx_program_putc(PIO pio, uint sm, char c) {
+    pio_sm_put_blocking(pio, sm, (uint32_t)c);
+}
+
+static inline void uart_tx_program_puts(PIO pio, uint sm, const char *s) {
+    while (*s)
+        uart_tx_program_putc(pio, sm, *s++);
+}
+
+#define putc(c) uart_tx_program_putc(pio1, 0, c)
+#define puts(s) uart_tx_program_puts(pio1, 0, s)
+
+static void _itoa_padded(unsigned int value, char *buffer, int base, int width, char pad_char) {
+    char *ptr = buffer;
+    char *end = buffer;
+
+    // 转换数字到字符串
+    do {
+        int digit = value % base;
+        *end++ = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
+        value /= base;
+    } while (value);
+
+    // 添加填充字符（如 '0' 或空格），直到达到指定宽度
+    while (end - buffer < width) {
+        *end++ = pad_char;
+    }
+
+    // 字符串反转
+    *end = '\0';
+    while (ptr < --end) {
+        char temp = *ptr;
+        *ptr++ = *end;
+        *end = temp;
+    }
+}
+
+static void pio_uart_tx_printf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    while (*format) {
+        if (*format == '%') {
+            format++;  // 跳过 '%'
+
+            // 解析填充字符（可选）
+            char pad_char = ' ';
+            if (*format == '0') {
+                pad_char = '0';
+                format++;
+            }
+
+            // 解析宽度（可选）
+            int width = 0;
+            while (*format >= '0' && *format <= '9') {
+                width = width * 10 + (*format - '0');
+                format++;
+            }
+
+            // 处理格式说明符
+            char buffer[32];
+            switch (*format) {
+            case 'd': {  // 十进制整数
+                int value = va_arg(args, int);
+                if (value < 0) {
+                    putc('-');
+                    value = -value;
+                }
+                _itoa_padded(value, buffer, 10, width, pad_char);
+                puts(buffer);
+                break;
+            }
+            case 'x': {  // 十六进制整数
+                unsigned int value = va_arg(args, unsigned int);
+                _itoa_padded(value, buffer, 16, width, pad_char);
+                puts(buffer);
+                break;
+            }
+            case 'c': {  // 单个字符
+                char c = (char)va_arg(args, int);
+                putc(c);
+                break;
+            }
+            case 's': {  // 字符串
+                const char *str = va_arg(args, const char *);
+                puts(str);
+                break;
+            }
+            case '%': {  // 输出 '%'
+                putc('%');
+                break;
+            }
+            default:  // 未知格式，直接输出
+                putc('%');
+                putc(*format);
+                break;
+            }
+        } else if (*format == '\n') {
+            puts("\r\n");
+        } else {
+            putc(*format);  // 普通字符直接输出
+        }
+        format++;
+    }
+
+    va_end(args);
+}
+
+%}

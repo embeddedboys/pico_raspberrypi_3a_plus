@@ -25,7 +25,7 @@
 
 static int tft_ssd1327_init_display(struct tft_priv *priv)
 {
-    printf("%s, writing patched initial sequence...\n", __func__);
+    pr_info("%s, writing patched initial sequence...\n", __func__);
     priv->tftops->reset(priv);
 
     write_reg(priv,  0xae);

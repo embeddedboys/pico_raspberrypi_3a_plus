@@ -37,7 +37,7 @@
 #define TSC2007_DEF_SPEED  400000
 #define TSC2007_PIN_SCL    7
 #define TSC2007_PIN_SDA    6
-#define TSC2007_PIN_IRQ    28
+#define TSC2007_PIN_IRQ    8
 #define TSC2007_PIN_RST    22
 
 #define TSC2007_CMD_READ_X 0xC0
@@ -125,15 +125,8 @@ uint16_t tsc2007_read_y(struct indev_priv *priv)
     return this_y;
 }
 
-// #define REAL_X(x) ((x * priv->y_res) / (1 << priv->spec->resolution))
-// #define REAL_Y(y) ((y * priv->x_res) / (1 << priv->spec->resolution))
-// #define TEST(v) (v | (0x1 << 2))
 bool tsc2007_is_pressed(struct indev_priv *priv)
 {
-    // printf("X- : %d  Y- : %d\n", REAL_X(read_reg(priv, TEST(0xA0))), REAL_Y(read_reg(priv, TEST(0xB0))));
-    // printf("Z1- : %d  Z2- : %d\n", REAL_Y(read_reg(priv, TEST(0xC0))), REAL_X(read_reg(priv, TEST(0xD0))));
-    // return false;
-    // printf("%d\n", gpio_get(priv->spec->pin_irq));
     return !gpio_get(priv->spec->pin_irq);
 }
 

@@ -25,7 +25,7 @@
 
 static int tft_st7796_init_display(struct tft_priv *priv)
 {
-    printf("%s, writing patched initial sequence...\n", __func__);
+    pr_info("%s, writing patched initial sequence...\n", __func__);
     priv->tftops->reset(priv);
 
 #if TFT_MODEL_YT350S006

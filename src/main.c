@@ -47,7 +47,7 @@
 
 // #include "backlight.h"
 
-// #include "debug.h"
+#include "debug.h"
 
 QueueHandle_t xToFlushQueue = NULL;
 
@@ -90,9 +90,11 @@ int main(void)
                     CPU_SPEED_MHZ * MHZ,
                     CPU_SPEED_MHZ * MHZ);
     // stdio_uart_init_full(uart0, 115200, 16, 17);
-    stdio_uart_init();
+    // stdio_uart_init();
+    extern int pio_uart_tx_init(uint pin_tx);
+    pio_uart_tx_init(14);
 
-    printf("\n\n\nPICO DM SPI Template LVGL Porting\n");
+    pr_info("\n\n\nPICO Raspberry Pi 3A+ LVGL Porting\n");
 
     xToFlushQueue = xQueueCreate(2, sizeof(struct video_frame));
 
@@ -107,7 +109,7 @@ int main(void)
     lv_port_indev_init();
 #endif
 
-    printf("Starting demo\n");
+    pr_info("Starting demo...\n");
     // lv_example_btn_1();
     lv_demo_widgets();
     // lv_demo_stress();
@@ -129,9 +131,9 @@ int main(void)
 
     // backlight_driver_init();
     // backlight_set_level(100);
-    // printf("backlight set to 100%%\n");
+    // pr_info("backlight set to 100%%\n");
 
-    printf("calling freertos scheduler, %lld\n", time_us_64());
+    pr_info("calling freertos scheduler, %lld\n", time_us_64());
     vTaskStartScheduler();
     for(;;);
 

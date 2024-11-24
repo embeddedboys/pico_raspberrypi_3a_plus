@@ -29,8 +29,8 @@
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
-#define FT6236_PIN_SCL   7
-#define FT6236_PIN_SDA   6
+#define FT6236_PIN_SCL   3
+#define FT6236_PIN_SDA   2
 #define FT6236_PIN_RST   22
 #define FT6236_PIN_IRQ   28
 

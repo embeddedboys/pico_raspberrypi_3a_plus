@@ -31,6 +31,8 @@
 #include "hardware/vreg.h"
 #include "hardware/clocks.h"
 
+#include "debug.h"
+
 #define USE_DMA 1
 
 // Do not modify this header file. It is automatically generated from the pio program.
@@ -86,7 +88,7 @@ void pio_spi_tx_write_buf_dc(void *buf, size_t len, bool dc)
 
 int pio_spi_tx_init(uint data_pin, uint clk_pin)
 {
-    printf("PIO SPI TX initializing ...\n");
+    pr_info("PIO SPI TX initializing ...\n");
 
 #if USE_DMA
     dma_tx = dma_claim_unused_channel(true);

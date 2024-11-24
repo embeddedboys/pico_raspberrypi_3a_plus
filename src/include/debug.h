@@ -4,12 +4,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define DEBUG 0
+#include "uart_tx.pio.h"
 
-#define DEBUG_TAG "[DEBUG] "
-#define INFO_TAG "[INFO] "
-#define WARN_TAG "[WARN] "
-#define ERROR_TAG "[ERROR] "
+#define DEBUG 0
 
 #if DEBUG
 #define pr_debug(fmt, ...) printf(DEBUG_TAG fmt, ##__VA_ARGS__)
@@ -19,8 +16,8 @@
 #define pr_debug_nt(fmt, ...)
 #endif
 
-#define pr_info(fmt, ...) printf(INFO_TAG fmt, ##__VA_ARGS__)
-#define pr_warn(fmt, ...) printf(WARN_TAG fmt, ##__VA_ARGS__)
-#define pr_error(fmt, ...) printf(ERROR_TAG fmt, ##__VA_ARGS__)
+#define pr_info(fmt, ...) pio_uart_tx_printf(fmt, ##__VA_ARGS__)
+#define pr_warn(fmt, ...) pio_uart_tx_printf(fmt, ##__VA_ARGS__)
+#define pr_error(fmt, ...) pio_uart_tx_printf(fmt, ##__VA_ARGS__)
 
 #endif

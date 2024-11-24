@@ -27,8 +27,8 @@
 
 #if INDEV_DRV_USE_GT911
 
-#define GT911_PIN_SCL   7
-#define GT911_PIN_SDA   6
+#define GT911_PIN_SCL   3
+#define GT911_PIN_SDA   2
 #define GT911_PIN_RST   22
 #define GT911_PIN_IRQ   28
 
@@ -186,7 +186,7 @@ static void gt911_hw_init(struct indev_priv *priv)
     gpio_set_dir(priv->spec->pin_irq, GPIO_IN);
     gpio_pull_down(priv->spec->pin_irq);
 
-    // i2c_bus_scan(priv->spec->i2c.master);
+    i2c_bus_scan(priv->spec->i2c.master);
 
     u8 temp[5];
     read_addr16(priv, GT911_REG_PID, temp, 4);

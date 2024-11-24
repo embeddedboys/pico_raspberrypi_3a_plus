@@ -53,4 +53,14 @@ else(BUILD_TEST)
             hardware_dma
             )
 
+    # PIO Uart TX library
+    add_library(pio_uart_tx)
+    pico_generate_pio_header(pio_uart_tx ${CMAKE_CURRENT_LIST_DIR}/uart_tx.pio)
+    target_sources(pio_uart_tx PRIVATE uart_tx.c)
+    target_link_libraries(pio_uart_tx PRIVATE
+            pico_stdlib
+            hardware_pio
+            hardware_dma
+            )
+
 endif(BUILD_TEST)

@@ -19,7 +19,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-set(OVERCLOCK_ENABLED 0)    # 1: enable, 0: disable
+set(OVERCLOCK_ENABLED 1)    # 1: enable, 0: disable
 
 if(OVERCLOCK_ENABLED)
 
@@ -170,11 +170,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC .)
 target_link_libraries(${PROJECT_NAME}
     pico_stdlib
     pico_multicore
+    hardware_pio
     hardware_i2c
     hardware_spi
     hardware_pwm
     hardware_clocks
     pio_spi_tx
+    pio_uart_tx
     pico_bootsel_via_double_reset
     lvgl lvgl::demos lvgl::examples
     FreeRTOS-Kernel-Heap3
